@@ -12,8 +12,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // final dummyList = List.generate(20, (index) => CatalogModle.items[0]);
-
   get item => null;
 
   @override
@@ -24,7 +22,7 @@ class _HomePageState extends State<HomePage> {
 
   loadData() async {
     await Future.delayed(
-      Duration(seconds: 2),
+      Duration(seconds: 1),
     );
     final catalogJson =
         await rootBundle.loadString("assets/files/catalog.json");
@@ -44,11 +42,39 @@ class _HomePageState extends State<HomePage> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: (CatalogModle.items.isNotEmpty)
-            ? ListView.builder(
+            ? (GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16),
+                itemBuilder: (context, index) {
+                  final item = CatalogModle.items[index];
+                  return Card(
+                      clipBehavior: Clip.antiAlias,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      child: GridTile(
+                        header: Container(
+                          child: Text(
+                            item.name,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(color: Colors.blue),
+                        ),
+                        child: Image.network(item.image),
+                        footer: Container(
+                          child: Text(
+                            item.price.toString(),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(color: Colors.black),
+                        ),
+                      ));
+                },
                 itemCount: CatalogModle.items.length,
-                itemBuilder: (context, index) => ItemWidget(
-                      item: CatalogModle.items[index],
-                    ))
+              ))
             : Center(
                 child: CircularProgressIndicator(),
               ),
