@@ -12,7 +12,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final dummyList = List.generate(20, (index) => CatalogModle.Items[0]);
+  // final dummyList = List.generate(20, (index) => CatalogModle.items[0]);
+
+  get item => null;
 
   @override
   void initState() {
@@ -21,11 +23,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   loadData() async {
+    await Future.delayed(
+      Duration(seconds: 2),
+    );
     final catalogJson =
         await rootBundle.loadString("assets/files/catalog.json");
     final decodedData = jsonDecode(catalogJson);
     var productData = decodedData["products"];
-    print(productData);
+    CatalogModle.items =
+        List.from(productData).map<Item>((item) => Item.fromMap(item)).toList();
+    setState(() {});
   }
 
   @override
@@ -34,13 +41,17 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("Asfaan's App"),
       ),
-      body: ListView.builder(
-        itemCount: dummyList.length,
-        itemBuilder: (context, index) {
-          return ItemWidget(
-            item: dummyList[index],
-          );
-        },
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: (CatalogModle.items.isNotEmpty)
+            ? ListView.builder(
+                itemCount: CatalogModle.items.length,
+                itemBuilder: (context, index) => ItemWidget(
+                      item: CatalogModle.items[index],
+                    ))
+            : Center(
+                child: CircularProgressIndicator(),
+              ),
       ),
       drawer: MyDrawer(),
     );
